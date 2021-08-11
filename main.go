@@ -29,6 +29,7 @@ func main() {
 	api := router.Group("/api/v1")
 
 	api.POST("/users", userHandler.RegisterUser)
+	api.DELETE("/delete", userHandler.DeleteUser)
 	api.POST("/sessions", userHandler.Login)
 	api.POST("/email_checkers", userHandler.CheckEmailAvailabilty)
 	api.POST("/avatars", userHandler.UploadAvatar)

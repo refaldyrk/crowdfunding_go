@@ -11,6 +11,7 @@ type Service interface {
 	Login(input LoginInput) (User, error)
 	IsEmailAvailable(input CheckEmailInput) (bool, error)
 	SaveAvatar(ID int, fileLocation string) (User, error)
+	DeleteUser(input DeleteUserInput) (User, error)
 }
 
 type service struct {
@@ -39,6 +40,17 @@ func (s *service) RegisterUser(input RegisterUserInput) (User, error) {
 		return newUser, err
 	}
 	return newUser, nil
+}
+func (s *service) DeleteUser(input DeleteUserInput) (User, error) {
+	user := User{}
+	user.ID = input.ID
+
+	deleteUser, err := s.repository.Delete(user)
+
+	if err != nil {
+		return deleteUser, err
+	}
+	return deleteUser, nil
 }
 
 func (s *service) Login(input LoginInput) (User, error) {
