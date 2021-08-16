@@ -55,42 +55,6 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-//Function Delete User
-func (h *userHandler) DeleteUser(c *gin.Context) {
-	var input user.DeleteUserInput
-
-	err := c.ShouldBindJSON(&input)
-
-	if err != nil {
-		errors := helper.FormatValidationError(err)
-		errorMessage := gin.H{"errors": errors}
-
-		response := helper.APIResponse("Delete Account Failed", http.StatusUnprocessableEntity, "error", errorMessage)
-		c.JSON(http.StatusUnprocessableEntity, response)
-		return
-	}
-
-	deleteUser, err := h.userService.DeleteUser(input)
-	if err != nil {
-		response := helper.APIResponse("Delete Account Failed", http.StatusBadRequest, "error", nil)
-		c.JSON(http.StatusBadRequest, response)
-		return
-	}
-
-	token, err := h.authService.GenerateToken(deleteUser.ID)
-	if err != nil {
-		response := helper.APIResponse("Delete Account Failed", http.StatusBadRequest, "error", nil)
-		c.JSON(http.StatusBadRequest, response)
-		return
-	}
-
-	formatter := user.FormatUser(deleteUser, token)
-
-	response := helper.APIResponse("Account Has Been Deleted", http.StatusOK, "success", formatter)
-
-	c.JSON(http.StatusOK, response)
-}
-
 //Function Login User
 func (h *userHandler) Login(c *gin.Context) {
 	var input user.LoginInput
