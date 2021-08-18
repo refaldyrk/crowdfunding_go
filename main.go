@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"projek_go/auth"
@@ -32,19 +31,19 @@ func main() {
 	campaignService := campaign.NewService(campaignRepository)
 	authService := auth.NewService()
 
-	//TES SERVICE
-	campaigns, _ := campaignService.FindCampaings(0)
-	fmt.Println(len(campaigns))
-
 	userHandler := handler.NewUserHandler(userService, authService)
-
+	campaignHandler := handler.NewCampaignHandler(campaignService)
 	router := gin.Default()
 	api := router.Group("/api/v1")
 
+	//USER
 	api.POST("/users", userHandler.RegisterUser)
 	api.POST("/sessions", userHandler.Login)
 	api.POST("/email_checkers", userHandler.CheckEmailAvailabilty)
 	api.POST("/avatars", authMiddleware(authService, userService), userHandler.UploadAvatar)
+
+	//CAMPAIGN
+	api.GET("/campaigns", campaignHandler.GetCampaigns)
 
 	router.Run()
 }
