@@ -1,6 +1,7 @@
 package campaign
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 
@@ -11,6 +12,7 @@ type Service interface {
 	GetCampaigns(userID int) ([]Campaign, error)
 	GetCampaignByID(input GetCampaignDetailInput) (Campaign, error)
 	CreateCampaign(input CreateCampaignInput) (Campaign, error)
+	UpdateCampaign(inputID GetCampaignDetailInput, inputData CreateCampaignInput) (Campaign, error)
 }
 
 type service struct {
@@ -58,7 +60,7 @@ func (s *service) CreateCampaign(input CreateCampaignInput) (Campaign, error) {
 	campaign.UserID = input.User.ID
 
 	//SLUG
-	randomCode := rand.Intn(50000)
+	randomCode := rand.Intn(50000) //Random Number
 	candidateSlug := fmt.Sprintf("%s %d %d", input.Name, input.User.ID, randomCode)
 	campaign.Slug = slug.Make(candidateSlug)
 
@@ -68,4 +70,28 @@ func (s *service) CreateCampaign(input CreateCampaignInput) (Campaign, error) {
 	}
 
 	return newCampaign, nil
+}
+
+func (s *service) UpdateCampaign(inputID GetCampaignDetailInput, inputData CreateCampaignInput) (Campaign, error) {
+	campaign, err := s.repository.FindByID(inputID.ID)
+	if err != nil {
+		return campaign, err
+	}
+
+	if campaign.UserID != inputData.User.ID {
+		return campaign, errors.New("not owner")
+	}
+
+	campaign.Name = inputData.Name
+	campaign.ShortDescription = inputData.ShortDescription
+	campaign.Description = inputData.Description
+	campaign.GoalAmount = inputData.GoalAmount
+	campaign.Perks = inputData.Perks
+
+	updatedCampaign, err := s.repository.Update(campaign)
+	if err != nil {
+		return updatedCampaign, err
+	}
+
+	return updatedCampaign, nil
 }
