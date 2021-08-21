@@ -62,12 +62,15 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	response := helper.APIResponse("Account Has Been Registered", http.StatusOK, "success", formatter)
 
 	c.JSON(http.StatusOK, response)
+
+	//MAIL
+	messageMail := fmt.Sprintf("Hello %s, <b>Your Account Successfully Registered, Thank You</b><br /><br /><b>Your Account Information</b>: <br />Name: %s<br />Password: %s<br />Occupation: %s<br />", input.Name, input.Name, input.Password, input.Occupation)
 	mailer := gomail.NewMessage()
 	mailer.SetHeader("From", SENDER_CONFIG)
 	mailer.SetHeader("To", input.Email)
 	mailer.SetAddressHeader("Cc", input.Email, "Register Account")
-	mailer.SetHeader("Subject", "NOTIFICATION")
-	mailer.SetBody("text/html", "Hello, <b>Your Account Successfully Registered, Thank You</b>")
+	mailer.SetHeader("Subject", "Register Account")
+	mailer.SetBody("text/html", messageMail)
 
 	dialer := gomail.NewDialer(
 		HOST_CONFIG,
@@ -80,8 +83,8 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-
-	log.Println("Mail sent!")
+	statusMailSent := fmt.Sprintf("Email Send To <%s>", input.Email)
+	log.Println(statusMailSent)
 }
 
 //Function Login User
