@@ -2,22 +2,13 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"projek_go/auth"
 	"projek_go/helper"
 	"projek_go/user"
 
 	"github.com/gin-gonic/gin"
-	"gopkg.in/gomail.v2"
 )
-
-//EMAIL NOTIFICATION
-const HOST_CONFIG = "smtp.gmail.com"
-const PORT_CONFIG = 587
-const SENDER_CONFIG = "StartIn Aja <refaldy.rizky22@gmail.com>"
-const EMAIL_CONFIG = "refaldy.rizky22@gmail.com"
-const PASSWORD_CONFIG = "rafael111004."
 
 type userHandler struct {
 	userService user.Service
@@ -62,29 +53,6 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	response := helper.APIResponse("Account Has Been Registered", http.StatusOK, "success", formatter)
 
 	c.JSON(http.StatusOK, response)
-
-	//MAIL
-	messageMail := fmt.Sprintf("Hello %s, <b>Your Account Successfully Registered, Thank You</b><br /><br /><b>Your Account Information</b>: <br />Name: %s<br />Password: %s<br />Occupation: %s<br />", input.Name, input.Name, input.Password, input.Occupation)
-	mailer := gomail.NewMessage()
-	mailer.SetHeader("From", SENDER_CONFIG)
-	mailer.SetHeader("To", input.Email)
-	mailer.SetAddressHeader("Cc", input.Email, "Register Account")
-	mailer.SetHeader("Subject", "Register Account")
-	mailer.SetBody("text/html", messageMail)
-
-	dialer := gomail.NewDialer(
-		HOST_CONFIG,
-		PORT_CONFIG,
-		EMAIL_CONFIG,
-		PASSWORD_CONFIG,
-	)
-
-	err = dialer.DialAndSend(mailer)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	statusMailSent := fmt.Sprintf("Email Send To <%s>", input.Email)
-	log.Println(statusMailSent)
 }
 
 //Function Login User
