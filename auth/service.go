@@ -14,7 +14,7 @@ type Service interface {
 type jwtService struct {
 }
 
-var SECRET_KEY = []byte("111004_94594urjmjdmoepwsmdcoqpfmqpowh_auliapauqdjla")
+var SECRET_KEY = []byte("SECRET_KEY")
 
 func NewService() *jwtService {
 	return &jwtService{}

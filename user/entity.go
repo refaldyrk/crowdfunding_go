@@ -9,6 +9,8 @@ type User struct {
 	Name           string
 	Occupation     string
 	Email          string
+	Verif          int
+	Code           string
 	PasswordHash   string
 	AvatarFileName string
 	Role           string
